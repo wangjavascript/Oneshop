@@ -7,32 +7,51 @@ import axios from 'axios'
 import '../mock'
 
 export default class All extends Component {
-    state = { data: {}, count: 0 }
+    state = { data: {}, list: [], val: 0, rightList: [], countList: [] }
     componentDidMount() {
         axios.get('/list').then(({ data }) => {
-            console.log(data, '----000')
             this.setState({
                 data
             })
+            this.setState({ list: this.state.data.top[0] })
+            this.setState({ rightList: this.state.data.top[0].left[0].list })
+            let { countList } = this.state
+            this.state.data.top.map(item => {
+                (item.left).map(val => {
+                    countList.push(val.list)
+                })
+            })
+            this.setState({ countList })
         })
     }
     setList = (index) => {
         this.setState({ count: index })
     }
+    set = (index, item) => {
+        this.setState({ list: item })
+        this.setState({ val: index })
+    }
+    fn = (item) => {
+        this.setState({ rightList: item.list })
+    }
     render() {
-        let { left } = this.state.data
-        let { count } = this.state
+        let { top } = this.state.data
+        let { list, val, rightList, countList } = this.state
         return (
             <>
-
                 <Header title={'所有商品'} />
                 <div className='all-home'>
-                    <Left list={left} fn={this.setList} />
-                    {
-                        left && left.map((item, index) =>
-                            index === count ? <Right key={index} list={item.list} /> : ''
-                        )
-                    }
+                    <div className='top'>
+                        {
+                            top && top.map((item, index) =>
+                                <span className={index === val ? 'active' : ''} onClick={this.set.bind(this, index, item)} key={index}>{item.name}</span>
+                            )
+                        }
+                    </div>
+                    <div className='all-box'>
+                        <Left list={list} fn={this.fn} />
+                        <Right list={rightList} countList={countList} />
+                    </div>
                 </div>
             </>
         )

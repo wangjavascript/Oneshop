@@ -1,20 +1,31 @@
 import React, { Component } from 'react'
 
 export default class left extends Component {
-    state = { count: 0 }
-    set = (index) => {
-        let { fn } = this.props
-        fn( index)
+    state = { count: 0, list: [] }
+    componentDidMount() {
+
+    }
+    fn = () => {
+        let { left } = this.props.list
+        if (left) {
+            this.setState({ list: left[0].list })
+        }
+    }
+    set = (index, item) => {
+        this.setState({ list: item.list })
         this.setState({ count: index })
+        let { fn } = this.props
+        fn(item)
     }
     render() {
-        let { list } = this.props
+        let { left } = this.props.list
         let { count } = this.state
         return (
             <div className='left'>
                 {
-                    list && list.map((item, index) =>
-                        <li className={index === count ? 'active' : ''} onClick={this.set.bind(this, index)} key={index}>{item.title}</li>
+                    left && left.map((item, index) =>
+                        <li className={index === count ? 'active' : ''}
+                            onClick={this.set.bind(this, index, item)} key={index}>{item.title}</li>
                     )
                 }
             </div>
